@@ -156,3 +156,5 @@ dmypy.json
 .pyre/
 
 .pdf
+
+.vscode/
