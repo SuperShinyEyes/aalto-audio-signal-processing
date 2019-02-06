@@ -1,5 +1,6 @@
 import numpy as np
 from wave import open as open_wave
+import matplotlib.pyplot as plt
 import IPython
 import pathlib
 import logging
@@ -18,6 +19,15 @@ class Wave:
         else:
             self.ts = ts
 
+
+    @property
+    def start(self):
+        return self.ts[0]
+
+    @property
+    def end(self):
+        return self.ts[-1]
+
     def normalize(self, amp=1.0):
         self.ys = normalize(self.ys, amp=amp)
 
@@ -30,6 +40,74 @@ class Wave:
         finally:
             return audio
 
+    def plot(self, ax=None, title=''):
+        plot(self.ts, self.ys, ax, title)
+
+    def make_spectrum(self):
+        n = len(self.ys)
+        period = 1 / self.framerate
+        
+        hs = np.fft.rfft(self.ys)
+        fs = np.fft.rfftfreq(n, period)
+
+        return Spectrum(hs, fs, self.framerate)
+
+    def slice(self, start, end):
+        return Wave(
+            ys          = self.ys[start:end].copy(),
+            ts          = self.ts[start:end].copy(),
+            framerate   = self.framerate
+        )
+
+    def window(self, window):
+        self.ys *= window
+
+    def make_spectrogram(self, seg_length, window_flag=True):
+        if window_flag:
+            window = np.hamming(seg_length)
+        i, j = 0, seg_length
+        step = seg_length // 2
+
+        spectrum_map = dict()
+
+        while j < len(self.ys):
+            segment = self.slice(i, j)
+            if window_flag:
+                segment.window(window)
+            t = (segment.start + segment.end) / 2
+            spectrum_map[t] = segment.make_spectrum()
+
+            i += step
+            j += step
+
+        return Spectrogram(spectrum_map, seg_length)
+
+
+class Spectrum:
+
+    def __init__(self, hs, fs, framerate):
+        self.hs = np.asanyarray(hs)
+        self.fs = np.asanyarray(fs)
+        self.framerate = framerate
+
+    @property
+    def amps(self):
+        return np.abs(self.hs)
+
+    def plot(self, cut_off=None, ax=None, title='', log_scale_flag=True):
+        if log_scale_flag:
+            plot(self.fs, np.log10(self.amps), ax, title)
+        else:
+            plot(self.fs, self.amps, ax, title)
+        
+
+def plot(xs, ys, ax=None, title=''):
+
+    if ax is None:
+        plt.plot(xs, ys)
+    else:
+        ax.plot(xs, ys)
+        ax.set_title(title)
 
 def normalize(ys, amp=1.0):
     high, low = abs(max(ys)), abs(min(ys))
@@ -73,3 +151,26 @@ def read_wave(filename='sound.wav'):
     wave = Wave(ys, framerate=framerate)
     wave.normalize()
     return wave
+
+
+class Spectrogram:
+    def __init__(self, spectrum_map, seg_length):
+        self.spectrum_map = spectrum_map
+        self.seg_length = seg_length
+
+    def any_spectrum(self):
+        index = next(iter(self.spectrum_map))
+        return self.spectrum_map[index]
+
+    def frequencies(self):
+        return self.any_spectrum().fs
+
+    def times(self):
+        return sorted(iter(self.spectrum_map))
+
+    def plot(self, ax=None, title=''):
+        fs = self.frequencies()
+        ts = self.times()
+
+        size = len(fs), len(ts)
+        
