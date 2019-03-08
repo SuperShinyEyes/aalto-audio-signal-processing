@@ -9,7 +9,6 @@ class EasyDict(dict):
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-PATHS = EasyDict()
-PATHS.base = Path(BASE_DIR)
-PATHS.data = PATHS.base / 'data'
-PATHS.violin = PATHS.data / '92002__jcveliz__violin-origional.wav'
+paths = EasyDict()
+paths.base = Path(BASE_DIR)
+paths.data = list( [str(p) for p in (paths.base / 'data').iterdir()] )
