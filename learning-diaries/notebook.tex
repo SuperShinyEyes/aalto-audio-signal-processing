@@ -141,7 +141,7 @@
     \def\gt{>}
     \def\lt{<}
     % Document parameters
-    \title{06\_sound\_synthesis}
+    \title{07\_reverberation}
     
     
     
@@ -203,11 +203,15 @@
 \expandafter\def\csname PY@tok@kn\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
 \expandafter\def\csname PY@tok@kr\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
 \expandafter\def\csname PY@tok@bp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@fm\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
 \expandafter\def\csname PY@tok@vc\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
 \expandafter\def\csname PY@tok@vg\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
 \expandafter\def\csname PY@tok@vi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@vm\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@sa\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
 \expandafter\def\csname PY@tok@sb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
 \expandafter\def\csname PY@tok@sc\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@dl\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
 \expandafter\def\csname PY@tok@s2\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
 \expandafter\def\csname PY@tok@sh\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
 \expandafter\def\csname PY@tok@s1\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
@@ -217,7 +221,9 @@
 \expandafter\def\csname PY@tok@mi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
 \expandafter\def\csname PY@tok@il\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
 \expandafter\def\csname PY@tok@mo\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@ch\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
 \expandafter\def\csname PY@tok@cm\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@cpf\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
 \expandafter\def\csname PY@tok@c1\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
 \expandafter\def\csname PY@tok@cs\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
 
@@ -274,202 +280,202 @@
     
 
     
-    \section{Sound Synthesis}\label{sound-synthesis}
+    \hypertarget{reverberation-and-3-d-sounds}{%
+\section{Reverberation and 3-D
+sounds}\label{reverberation-and-3-d-sounds}}
 
-Linear vs. Nonlinear
+Sounds people are exposed in natural life have various kinds of
+reverberation. Today as sounds are synthesized and recorded in an
+anechoic environments, it is crucial to add reverberation to emulate
+``true'' sounds. Film/game/VR/Music industry have been investing in
+artificial reverberation to make better sound experience.
 
-\subsection{Additive synthesis}\label{additive-synthesis}
-
-\begin{itemize}
-\tightlist
-\item
-  As known as Fourier synthesis or sinusoidal modeling.
-\item
-  Each partial is generated separately
-\item
-  Accurate control but lots of data
-\end{itemize}
-
-\subsection{Subtractive synthesis}\label{subtractive-synthesis}
-
-\begin{itemize}
-\tightlist
-\item
-  Initiazted by Bob Mood in the 1960s.
-\item
-  Moog made instruments with traditional keyboard interfaces so
-  musicians feel familiar to the devices
-\end{itemize}
-
-In a nutshell, subtractive synthesis is based on the source-filter
-model; it starts with a signal that has a rich frequency spectrum and
-the signal is precessed using a filter.
-
-\includegraphics{images/analog_subtractive_synthesizer.png} \textless{}
-A block diagram of an actual analog subtractive synthesizer
-\textgreater{}
-
-    \subsubsection{Implementing subtractive
-synthesis}\label{implementing-subtractive-synthesis}
-
-\includegraphics{images/subtractive_synthesizer_architecture.png}
-\textless{} Example architecture of a subtractive synthesizer
-\textgreater{}
-
-\begin{itemize}
-\tightlist
-\item
-  One or more oscillators typically used as the source
-\item
-  Second- or fourth-order resonant lowpass filters typically used
-\item
-  Envelope generators(ADSR) used for modulation
-\end{itemize}
-
-\includegraphics{images/envelope.png} \textless{} Envelope generators in
-subtractive synthesis \textgreater{}
-
-\subsubsection{Oscillators in subtractive
-synthesis}\label{oscillators-in-subtractive-synthesis}
+Reverberation is a consquence of the slowness in sound; sound travels in
+the air at approximately 345 m/s.
 
 \begin{figure}
 \centering
-\includegraphics{images/oscillators.png}
-\caption{oscillators}
+\includegraphics{images/reverb_example.png}
+\caption{reverb\_example}
 \end{figure}
 
-\begin{itemize}
-\tightlist
-\item
-  Periodic geometric waveforms are at the heart of subtractive synthesis
-\item
-  These waveforms are harmonically rich
-\item
-  Might contain all or only even harmonics
-\item
-  Digital emulation of these waveforms \textbf{must suppress aliasing}
-\end{itemize}
+    \hypertarget{techniques}{%
+\subsection{Techniques}\label{techniques}}
 
-    \subsection{Virtual Analog(VA)}\label{virtual-analogva}
+\hypertarget{traditional-techniques}{%
+\subsubsection{Traditional techniques}\label{traditional-techniques}}
 
-Emulation of analog audio circuits in the digital domain.
+Traditional techiniques involve physical space to generate
+reverberation. As the reverberation is real, not simulated, the result
+sound is rich and natural. It is not used in practice anymore due to its
+inherent constraints: un-simulatable and unflexibility.
 
-Inherently VA oscillator waveforms have aliasing. Here's the rationale:
+Types:
 
 \begin{itemize}
 \tightlist
 \item
-  Periodic geometric waveforms contain \textbf{infinite harmonics}
+  Echo chambers
 \item
-  Sampling theorem tells us sammling rate must be at least twice the
-  highest frequency component
-\item
-  Highest frequency component is \textbf{infinite}
-\item
-  No sample rate will ever be high enough
-\item
-  Synthesizing geometric waveforms \textbf{trivially} is equivalent to
-  sampling a waveform with infinite frequency content.
+  Electromechanical reverb
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Plates
+  \item
+    Spring
+  \end{itemize}
 \end{itemize}
 
-There has been efforts to solve aliasing in VA:
+\hypertarget{analog-reverberation}{%
+\subsubsection{Analog reverberation}\label{analog-reverberation}}
+
+There are tape and oil reverbers used in the 20th century but are not
+used anymore
+
+\hypertarget{algorithmic-techniques}{%
+\subsubsection{Algorithmic techniques}\label{algorithmic-techniques}}
 
 \begin{itemize}
 \tightlist
 \item
-  Bandlimited synthesis methods
+  Comb filter (recirculating delay line)
+\item
+  Schroeder All-Pass filter
 
   \begin{itemize}
   \tightlist
   \item
-    Additive synthesis and its variations
+    Add a negative feedforward path to flatten the spectrum of a comb
+    filter
+  \item
+    Long impulse response, such as that of a comb filter
   \end{itemize}
 \item
-  Quasi-bandlimited synthesis methods
+  Moorer reverb
 
   \begin{itemize}
   \tightlist
   \item
-    Blit: bandlimited impulse train + filtering
-  \item
-    MinBLEP: Minimum-phase bandlimited step
-  \item
-    PolyBLEP: Polynomial bandlimited step
+    Lowpass-comb filter
   \end{itemize}
 \item
-  Alias-suppressing synthesis methods
-
-  \begin{itemize}
-  \tightlist
-  \item
-    oversampling
-  \item
-    DPW: Differentiated parabolic waveform
-  \end{itemize}
+  Feedback Delay Netowrks (FDN)
 \item
-  Post-processing synthesis suppression methods
-
-  \begin{itemize}
-  \tightlist
-  \item
-    Aliasing suppression via filtering
-  \end{itemize}
+  Convolution Reverb
+\item
+  Modal reverb
+\item
+  Scattering Delay Network
 \end{itemize}
 
-\subsubsection{DPW}\label{dpw}
+    \hypertarget{places-with-unintended-reverberation}{%
+\subsection{Places with unintended
+reverberation}\label{places-with-unintended-reverberation}}
 
-Motivation: If aliasing is attenuated sufficiently, its effects can be
-neglected. Algorithm is extremely siple to implement and requires two
-input parameters only: \textbf{fundamental frequency} and
-\textbf{sampling rate}
+Kukulkan temple generates reverberation which is similar to flanging.
+\includegraphics{images/kukulkan.png}
+\includegraphics{images/kukulkan2.png}
 
-\includegraphics{images/dpw.png} \includegraphics{images/dpw2.png}
+This gallery propagates sound so that a person on the other side of the
+wall hears you as if you were standing next her.
+\includegraphics{images/whispering_gallery.png}
 
-    \subsection{FM(Frequency Modulation)
-synthesis}\label{fmfrequency-modulation-synthesis}
+    \hypertarget{comb-reverberation-code}{%
+\subsection{Comb Reverberation Code}\label{comb-reverberation-code}}
+
+Here is a difference equation of an FIR comb filter:
+
+\[y(n)=x(n)+g x(n-M)\]
+
+where,
+
+\[M=\tau / f_{S}\]
+
+Here is the system function in Z domain:
+
+\[H(z)=1+g z^{-M}\]
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}32}]:} \PY{k+kn}{from} \PY{n+nn}{\PYZus{}\PYZus{}future\PYZus{}\PYZus{}} \PY{k}{import} \PY{n}{print\PYZus{}function}
+         \PY{k+kn}{from} \PY{n+nn}{scipy}\PY{n+nn}{.}\PY{n+nn}{signal} \PY{k}{import} \PY{n}{freqz}\PY{p}{,} \PY{n}{lfilter}
+         
+         \PY{k+kn}{from} \PY{n+nn}{asp} \PY{k}{import} \PY{n}{config}
+         \PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k}{as} \PY{n+nn}{np}
+         \PY{k+kn}{from} \PY{n+nn}{asp}\PY{n+nn}{.}\PY{n+nn}{core} \PY{k}{import} \PY{n}{read\PYZus{}wave}\PY{p}{,} \PY{n}{Wave}
+         \PY{k+kn}{from} \PY{n+nn}{IPython}\PY{n+nn}{.}\PY{n+nn}{display} \PY{k}{import} \PY{n}{Audio}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}3}]:} \PY{n}{config}\PY{o}{.}\PY{n}{paths}\PY{o}{.}\PY{n}{data}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}3}]:} ['/Users/parks1/asp/data/c2e2f2.wav',
+         '/Users/parks1/asp/data/c2e2.wav',
+         '/Users/parks1/asp/data/92002\_\_jcveliz\_\_violin-origional.wav',
+         '/Users/parks1/asp/data/c2e2g2.wav']
+\end{Verbatim}
+            
+    Load audio sample
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}19}]:} \PY{n}{violin} \PY{o}{=} \PY{n}{read\PYZus{}wave}\PY{p}{(}\PY{n}{config}\PY{o}{.}\PY{n}{paths}\PY{o}{.}\PY{n}{data}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{]}\PY{p}{)}
+         \PY{n}{violin}\PY{o}{.}\PY{n}{make\PYZus{}audio}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}19}]:} <IPython.lib.display.Audio object>
+\end{Verbatim}
+            
+    Comb filter in time domain
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}18}]:} \PY{k}{def} \PY{n+nf}{comb\PYZus{}filter}\PY{p}{(}\PY{n}{ys}\PY{p}{,} \PY{n}{M}\PY{p}{,} \PY{n}{gain}\PY{o}{=}\PY{l+m+mf}{0.7}\PY{p}{)}\PY{p}{:}
+             \PY{k}{return} \PY{n}{ys}\PY{p}{[}\PY{n}{M}\PY{p}{:}\PY{p}{]} \PY{o}{+} \PY{n}{gain} \PY{o}{*} \PY{n}{ys}\PY{p}{[}\PY{p}{:}\PY{o}{\PYZhy{}}\PY{n}{M}\PY{p}{]}
+             
+         \PY{n}{violin}\PY{o}{.}\PY{n}{ys} \PY{o}{=} \PY{n}{comb\PYZus{}filter}\PY{p}{(}\PY{n}{violin}\PY{o}{.}\PY{n}{ys}\PY{p}{,} \PY{l+m+mi}{4410}\PY{p}{)}
+         \PY{n}{violin}\PY{o}{.}\PY{n}{make\PYZus{}audio}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}18}]:} <IPython.lib.display.Audio object>
+\end{Verbatim}
+            
+    Comb filter in Z domain
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}31}]:} \PY{k}{def} \PY{n+nf}{comb\PYZus{}filter\PYZus{}z}\PY{p}{(}\PY{n}{ys}\PY{p}{,} \PY{n}{M}\PY{p}{,} \PY{n}{gain}\PY{o}{=}\PY{l+m+mf}{0.7}\PY{p}{)}\PY{p}{:}
+             \PY{c+c1}{\PYZsh{} B is the feedforward part}
+             \PY{n}{b} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{n}{M}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{)}
+             \PY{n}{b}\PY{p}{[}\PY{n}{M}\PY{p}{]} \PY{o}{=} \PY{n}{gain}
+             \PY{n}{b}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]} \PY{o}{=} \PY{l+m+mi}{1}
+             
+             \PY{k}{return} \PY{n}{lfilter}\PY{p}{(}\PY{n}{b}\PY{p}{,} \PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} \PY{n}{ys}\PY{p}{)}
+             
+         \PY{n}{violin}\PY{o}{.}\PY{n}{ys} \PY{o}{=} \PY{n}{comb\PYZus{}filter\PYZus{}z}\PY{p}{(}\PY{n}{violin}\PY{o}{.}\PY{n}{ys}\PY{p}{,} \PY{l+m+mi}{4410}\PY{p}{)}
+         \PY{n}{violin}\PY{o}{.}\PY{n}{make\PYZus{}spectrogram}\PY{p}{(}\PY{n}{seg\PYZus{}length}\PY{o}{=}\PY{l+m+mi}{441}\PY{p}{)}
+         \PY{n}{violin}\PY{o}{.}\PY{n}{make\PYZus{}audio}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}31}]:} <IPython.lib.display.Audio object>
+\end{Verbatim}
+            
+    \hypertarget{references}{%
+\subsection{References}\label{references}}
 
 \begin{itemize}
 \tightlist
 \item
-  Dicovered by John Chowning in the 1960s.
-\item
-  It uses the same idea as in FM radio
-\item
-  A computationally cheap way to compute intriguing sounds
-\item
-  Still a very popular technique with new exciting products
+  DAFX: Digital Audio Effects by John Wiley
 \end{itemize}
-
-\subsubsection{Basics of FM synthesis}\label{basics-of-fm-synthesis}
-
-\begin{itemize}
-\item
-  Very fast \textbf{vibrato} is applied to a sine wave("carrier")
-\item
-  Vibrato generator is called "modulator"
-\item
-  Both signals are in the audio range
-\item
-  Number of harmonics is proportioal to modulation index \(I\)
-
-  \begin{itemize}
-  \tightlist
-  \item
-    \(x(t)=A \sin \left(w_{c} t+I \sin \left(w_{m} t\right)\right)\)
-  \end{itemize}
-\item
-  frequency components get mirrored, if they occur above the Nyquist
-  frequency(aliasing) or below 0 Hz.
-\item
-  Inharmonic sounds when the frequency ratio between carrier and
-  modulator is not an integer
-\end{itemize}
-
-\begin{figure}
-\centering
-\includegraphics{images/fm_synthesis.png}
-\caption{fm\_synthesis}
-\end{figure}
 
 
     % Add a bibliography block to the postdoc
