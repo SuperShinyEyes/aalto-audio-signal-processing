@@ -423,13 +423,14 @@ Here is the system function in Z domain:
     Load audio sample
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}19}]:} \PY{n}{violin} \PY{o}{=} \PY{n}{read\PYZus{}wave}\PY{p}{(}\PY{n}{config}\PY{o}{.}\PY{n}{paths}\PY{o}{.}\PY{n}{data}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{]}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}73}]:} \PY{n}{violin} \PY{o}{=} \PY{n}{read\PYZus{}wave}\PY{p}{(}\PY{n}{config}\PY{o}{.}\PY{n}{paths}\PY{o}{.}\PY{n}{data}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{]}\PY{p}{)}
+         \PY{n}{y\PYZus{}reference} \PY{o}{=} \PY{n}{violin}\PY{o}{.}\PY{n}{ys}
          \PY{n}{violin}\PY{o}{.}\PY{n}{make\PYZus{}audio}\PY{p}{(}\PY{p}{)}
 \end{Verbatim}
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
-{\color{outcolor}Out[{\color{outcolor}19}]:} <IPython.lib.display.Audio object>
+{\color{outcolor}Out[{\color{outcolor}73}]:} <IPython.lib.display.Audio object>
 \end{Verbatim}
             
     Comb filter in time domain
@@ -468,6 +469,151 @@ Here is the system function in Z domain:
 {\color{outcolor}Out[{\color{outcolor}31}]:} <IPython.lib.display.Audio object>
 \end{Verbatim}
             
+    \hypertarget{feedback-delay-network-code}{%
+\subsection{Feedback Delay Network
+code}\label{feedback-delay-network-code}}
+
+\begin{figure}
+\centering
+\includegraphics{images/fdn_diagram.png}
+\caption{fdn\_diagram}
+\end{figure}
+
+The lossless recirculating matrix could be the Hadamard matrix for
+example.
+
+\[
+H_{4}=\left[ \begin{array}{cccc}{1} & {1} & {1} & {1} \\ {1} & {-1} & {1} & {-1} \\ {1} & {1} & {-1} & {-1} \\ {1} & {-1} & {-1} & {1}\end{array}\right]
+\]
+
+    I wrote a Python version of FDN written by T.Lokki. This is incomplete
+but I do not have the time to improve it.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}77}]:} \PY{c+c1}{\PYZsh{} Feedback Delay Network by T.Lokki}
+         
+         \PY{l+s+sd}{\PYZsq{}\PYZsq{}\PYZsq{}}
+         \PY{l+s+sd}{Matlab version from DAFX pg.170}
+         
+         \PY{l+s+sd}{\PYZpc{} delaynetwork.m}
+         \PY{l+s+sd}{\PYZpc{} Author: T. Lokki }
+         \PY{l+s+sd}{fs=44100;}
+         \PY{l+s+sd}{gain=0.97;}
+         
+         \PY{l+s+sd}{\PYZpc{} Create an impulse}
+         \PY{l+s+sd}{x = zeros(1,1*fs); }
+         \PY{l+s+sd}{x(1) = 1; }
+         \PY{l+s+sd}{y = zeros(1,fs);}
+         \PY{l+s+sd}{b = [1 1 1 1];}
+         \PY{l+s+sd}{c = [0.8 0.8 0.8 0.8];}
+         
+         \PY{l+s+sd}{\PYZpc{} Feedback matrix}
+         \PY{l+s+sd}{a(1,:)=[0 1 1 0]; }
+         \PY{l+s+sd}{a(2,:)=[\PYZhy{}1 0 0 \PYZhy{}1]; }
+         \PY{l+s+sd}{a(3,:)=[1 0 0 \PYZhy{}1]; }
+         \PY{l+s+sd}{a(4,:)=[0 1 \PYZhy{}1 0]; }
+         \PY{l+s+sd}{a2=a*(1/sqrt(2)) * gain;}
+         
+         \PY{l+s+sd}{\PYZpc{} Delay lines, use prime}
+         
+         \PY{l+s+sd}{m=[149 211 263 293]\PYZsq{}; }
+         \PY{l+s+sd}{z1=zeros(1,max(max(m))); }
+         \PY{l+s+sd}{z2=zeros(1,max(max(m))); }
+         \PY{l+s+sd}{z3=zeros(1,max(max(m))); }
+         \PY{l+s+sd}{z4=zeros(1,max(max(m)));}
+         
+         \PY{l+s+sd}{for n = 1:length(y)}
+         \PY{l+s+sd}{    tmp = [z1(m(1)) z2(m(2)) z3(m(3)) z4(m(4))]; }
+         \PY{l+s+sd}{    y(n) = x(n) + c(1)*z1(m(1)) + c(2)*z2(m(2)) + c(3)*z3(m(3)) + c(4)*z4(m(4));}
+         \PY{l+s+sd}{    z1 = [(x(n)*b(1) + tmp*a2(1,:)\PYZsq{}) z1(1:length(z1)\PYZhy{}1)]; }
+         \PY{l+s+sd}{    z2 = [(x(n)*b(2) + tmp*a2(2,:)\PYZsq{}) z2(1:length(z2)\PYZhy{}1)]; }
+         \PY{l+s+sd}{    z3 = [(x(n)*b(3) + tmp*a2(3,:)\PYZsq{}) z3(1:length(z3)\PYZhy{}1)]; }
+         \PY{l+s+sd}{    z4 = [(x(n)*b(4) + tmp*a2(4,:)\PYZsq{}) z4(1:length(z4)\PYZhy{}1)];}
+         \PY{l+s+sd}{end }
+         
+         \PY{l+s+sd}{plot(y)}
+         \PY{l+s+sd}{\PYZsq{}\PYZsq{}\PYZsq{}}
+         
+         \PY{n}{T60s} \PY{o}{=} \PY{p}{[}\PY{l+m+mf}{0.7}\PY{p}{,} \PY{l+m+mf}{0.14}\PY{p}{,} \PY{l+m+mf}{3.0}\PY{p}{,} \PY{l+m+mf}{0.6}\PY{p}{]}
+         \PY{n}{fs} \PY{o}{=} \PY{l+m+mi}{44100}
+         \PY{n}{gain} \PY{o}{=} \PY{l+m+mf}{0.97}
+         \PY{n}{chunk} \PY{o}{=} \PY{l+m+mi}{4410}
+         
+         \PY{n}{violin} \PY{o}{=} \PY{n}{read\PYZus{}wave}\PY{p}{(}\PY{n}{config}\PY{o}{.}\PY{n}{paths}\PY{o}{.}\PY{n}{data}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{]}\PY{p}{)}
+         \PY{n}{x} \PY{o}{=} \PY{n}{violin}\PY{o}{.}\PY{n}{ys}\PY{o}{.}\PY{n}{copy}\PY{p}{(}\PY{p}{)}
+         \PY{n}{y} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros\PYZus{}like}\PY{p}{(}\PY{n}{x}\PY{p}{)}
+         \PY{n}{b} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{ones}\PY{p}{(}\PY{l+m+mi}{4}\PY{p}{)}
+         \PY{n}{c} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{ones}\PY{p}{(}\PY{l+m+mi}{4}\PY{p}{)} \PY{o}{*} \PY{l+m+mf}{0.8}
+         
+         \PY{n}{A} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{p}{[}
+             \PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,}
+             \PY{p}{[}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{0}\PY{p}{,}\PY{l+m+mi}{0}\PY{p}{,}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,}
+             \PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{0}\PY{p}{,}\PY{l+m+mi}{0}\PY{p}{,}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,}
+             \PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{,}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{0}\PY{p}{]}
+         \PY{p}{]}\PY{p}{)}
+         \PY{n}{A} \PY{o}{=} \PY{n}{A} \PY{o}{/} \PY{n}{np}\PY{o}{.}\PY{n}{sqrt}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{)} \PY{o}{*} \PY{n}{gain}
+         
+         \PY{n}{m} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{p}{[}\PY{l+m+mi}{149}\PY{p}{,} \PY{l+m+mi}{211}\PY{p}{,} \PY{l+m+mi}{263}\PY{p}{,} \PY{l+m+mi}{293}\PY{p}{]}\PY{p}{)}\PY{o}{.}\PY{n}{T}\PY{p}{;}
+         \PY{n}{z} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{l+m+mi}{4}\PY{p}{,} \PY{n}{np}\PY{o}{.}\PY{n}{max}\PY{p}{(}\PY{n}{m}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{p}{;}
+         
+         \PY{k}{for} \PY{n}{n} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{y}\PY{o}{.}\PY{n}{size}\PY{p}{)}\PY{p}{:}
+             \PY{n}{tmp} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{p}{[}
+                 \PY{n}{z}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,}\PY{n}{m}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} 
+                 \PY{n}{z}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,}\PY{n}{m}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} 
+                 \PY{n}{z}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{,}\PY{n}{m}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{]}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} 
+                 \PY{n}{z}\PY{p}{[}\PY{l+m+mi}{3}\PY{p}{,}\PY{n}{m}\PY{p}{[}\PY{l+m+mi}{3}\PY{p}{]}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} 
+             \PY{p}{]}\PY{p}{)}
+             
+             \PY{n}{y}\PY{p}{[}\PY{n}{n}\PY{p}{]} \PY{o}{=} \PY{n}{x}\PY{p}{[}\PY{n}{n}\PY{p}{]} \PY{o}{+} \PY{n}{c}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]} \PY{o}{*} \PY{n}{z}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{[}\PY{n}{m}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]} \PYZbs{}
+                         \PY{o}{+} \PY{n}{c}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]} \PY{o}{*} \PY{n}{z}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{[}\PY{n}{m}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]} \PYZbs{}
+                         \PY{o}{+} \PY{n}{c}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{]} \PY{o}{*} \PY{n}{z}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{]}\PY{p}{[}\PY{n}{m}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{]}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]} \PYZbs{}
+                         \PY{o}{+} \PY{n}{c}\PY{p}{[}\PY{l+m+mi}{3}\PY{p}{]} \PY{o}{*} \PY{n}{z}\PY{p}{[}\PY{l+m+mi}{3}\PY{p}{]}\PY{p}{[}\PY{n}{m}\PY{p}{[}\PY{l+m+mi}{3}\PY{p}{]}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]} 
+             \PY{n}{z}\PY{p}{[}\PY{p}{:}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{:}\PY{p}{]} \PY{o}{=} \PY{n}{z}\PY{p}{[}\PY{p}{:}\PY{p}{,}\PY{p}{:}\PY{n}{np}\PY{o}{.}\PY{n}{max}\PY{p}{(}\PY{n}{m}\PY{p}{)}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}
+             \PY{n}{z}\PY{p}{[}\PY{p}{:}\PY{p}{,}\PY{l+m+mi}{0}\PY{p}{]} \PY{o}{=} \PY{n}{x}\PY{p}{[}\PY{n}{n}\PY{p}{]} \PY{o}{*} \PY{n}{b} \PY{o}{+} \PY{p}{(}\PY{n}{tmp} \PY{o}{@} \PY{n}{A}\PY{p}{)}
+         \PY{c+c1}{\PYZsh{}     z[0,0] = x[n] * b[0] + (tmp @ A[0])}
+         \PY{c+c1}{\PYZsh{}     z[1,0] = x[n] * b[1] + (tmp @ A[1])}
+         \PY{c+c1}{\PYZsh{}     z[2,0] = x[n] * b[2] + (tmp @ A[2])}
+         \PY{c+c1}{\PYZsh{}     z[3,0] = x[n] * b[3] + (tmp @ A[3])}
+             
+         \PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{y}\PY{p}{)}
+         \PY{n}{violin}\PY{o}{.}\PY{n}{ys} \PY{o}{=} \PY{n}{y}
+         \PY{n}{violin}\PY{o}{.}\PY{n}{make\PYZus{}audio}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}77}]:} <IPython.lib.display.Audio object>
+\end{Verbatim}
+            
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_14_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}78}]:} \PY{k+kn}{from} \PY{n+nn}{scipy}\PY{n+nn}{.}\PY{n+nn}{io} \PY{k}{import} \PY{n}{wavfile}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}79}]:} \PY{n}{wavfile}\PY{o}{.}\PY{n}{write}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{violin\PYZus{}fdn.wav}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+m+mi}{44100}\PY{p}{,} \PY{n}{y}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}74}]:} \PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{y\PYZus{}reference}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}74}]:} [<matplotlib.lines.Line2D at 0x1c24195a90>]
+\end{Verbatim}
+            
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
     \hypertarget{references}{%
 \subsection{References}\label{references}}
 
